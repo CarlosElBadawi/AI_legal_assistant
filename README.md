@@ -30,8 +30,12 @@ To let these agents communicate, the **langgraph agent** was exposed using **a2a
 ## 2. Setup and Usage Instructions
 To run and interact with the agents:  
 
-1. Run the `server.py` file (**MCP**).  
-2. Run the `__main__.py` file to expose the langgraph using **a2a**.  
+1. Activate the virtual environment by using the folloqing command:
+   ```bash
+   venv\Scripts\activate
+   ```
+2. Run the `server.py` file (**MCP**).  
+3. Run the `__main__.py` file to expose the langgraph using **a2a**.  
    - Make sure to run each of these in a **dedicated terminal** since they both have to be running for the app to work.  
 
 Then the next step depends on where you want to interact with the code.  
