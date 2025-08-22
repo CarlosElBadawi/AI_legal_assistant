@@ -1,0 +1,86 @@
+# Internal Deployment Standards and DevOps Practices
+
+## 1. Introduction
+
+This document outlines the deployment and infrastructure practices followed by the engineering team at ACME Corp. The goal is to ensure reliable, repeatable, and secure deployments across environments.
+
+## 2. Environments
+
+We use three main environments:
+- **Development**: For local dev and testing
+- **Staging**: Mirrors production, runs CI smoke tests
+- **Production**: Customer-facing environment, under strict change control
+
+## 3. CI/CD Pipeline
+
+All services are deployed using GitHub Actions and ArgoCD. The typical pipeline includes:
+1. Lint and format check (pre-commit)
+2. Unit tests with coverage threshold (80% minimum)
+3. Docker build and push to internal registry
+4. Helm chart update and deployment via ArgoCD
+
+Changes to `main` auto-deploy to staging.
+Production deploys require an approved GitHub PR with `#deploy-production` tag and a passing security scan.
+
+## 4. Secrets and Configuration
+
+Secrets are managed using **HashiCorp Vault** and injected into Kubernetes via **sealed secrets**.
+- Do not commit secrets to Git
+- Use environment-specific values.yaml files
+- Use `vault kv get` for local testing
+
+Developers can request temporary access tokens via the internal DevOps CLI.
+
+## 5. Monitoring and Logging
+
+Every service must:
+- Expose `/metrics` endpoint (Prometheus format)
+- Include OpenTelemetry tracing
+- Send logs to Loki, viewable via Grafana
+
+Alerts are defined in Prometheus and routed via Alertmanager to the on-call Slack channel.
+
+## 6. Infrastructure as Code
+
+All infrastructure is managed via Terraform and follows the “one repo per environment” model.
+- PRs to infra repos require 2 approvals
+- Terraform state is stored in S3 + DynamoDB locking
+- `terraform apply` is only permitted via CI runners, not locally
+
+Modules are versioned and reviewed bi-weekly.
+
+## 7. Incident Response
+
+In case of a production incident:
+1. Escalate via PagerDuty
+2. Log issue in the #incident-response Slack channel
+3. Start incident doc from the template in Confluence
+4. Run `postmortem-generator` CLI after resolution
+
+The incident coordinator is responsible for RCA, timeline, and blameless retrospective.
+
+## 8. Developer Onboarding
+
+New engineers should:
+- Clone the `acme-devbox` repo
+- Run `devbox up` to set up a local environment
+- Read through `docs/contributing.md` for workflow and commit standards
+
+All onboarding sessions are recorded and accessible via the internal Notion.
+
+## 9. Security Practices
+
+All services must:
+- Use image scanning via Trivy
+- Run static analysis with SonarQube
+- Follow the OWASP Top 10 checklist
+- Use least-privilege IAM roles
+
+Security reviews are mandatory for:
+- Public APIs
+- Data access logic
+- Third-party integrations
+
+## 10. Summary
+
+These practices are designed to standardize deployment, minimize downtime, and improve security. Every engineer is responsible for following them and proposing improvements.
