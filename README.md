@@ -30,7 +30,7 @@ To let these agents communicate, the **langgraph agent** was exposed using **a2a
 ## 2. Setup and Usage Instructions
 To run and interact with the agents:  
 
-1. Activate the virtual environment by using the folloqing command:
+1. Activate the virtual environment by using the following command:
    ```bash
    venv\Scripts\activate
    ```
