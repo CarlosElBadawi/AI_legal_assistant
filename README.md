@@ -1,3 +1,20 @@
+# Project Checklist
+
+Here is a checklist of what was implemented in this project:
+
+- [x] Built an ADK agent
+- [x] Built a Langgraph agent
+- [x] Built an MCP server and connected it to the Langgraph agent
+- [x] Exposed the Langgraph agent through A2A
+- [x] Connected the exposed agent with ADK
+- [x] Created an orchestrator agent
+- [x] Monitored and logged the tokens using Langfuse
+- [x] Created a RAG tool with semantic embedding
+- [x] Validated the RAG with cosine similarity
+- [x] Exposed the agent using FastAPI
+- [x] Added a Gradio UI to be able to prompt the agent
+
+---
 # AI Legal Assistant
 
 ## 1. Project description
@@ -30,12 +47,8 @@ To let these agents communicate, the **langgraph agent** was exposed using **a2a
 ## 2. Setup and Usage Instructions
 To run and interact with the agents:  
 
-1. Activate the virtual environment by using the following command:
-   ```bash
-   venv\Scripts\activate
-   ```
-2. Run the `server.py` file (**MCP**).  
-3. Run the `__main__.py` file to expose the langgraph using **a2a**.  
+1. Run the `server.py` file (**MCP**).  
+2. Run the `__main__.py` file to expose the langgraph using **a2a**.  
    - Make sure to run each of these in a **dedicated terminal** since they both have to be running for the app to work.  
 
 Then the next step depends on where you want to interact with the code.  
@@ -68,7 +81,7 @@ Query the agent via the Gradio UI by running the `app.py` in a dedicated termina
   - Final choice: `sentence-transformers/multi-qa-mpnet-base-dot-v1` → best avg similarity of **72%**  
 
 - Retriever changes:  
-  - From similarity score threshold = 0.5 → to **MMR with k=1**  
+  - From similarity score threshold = 0.5 → to **MMR with k=3**  
   - Limited results to 3 to avoid inaccuracies  
 
 - Prompt changes:  
@@ -86,7 +99,11 @@ Query the agent via the Gradio UI by running the `app.py` in a dedicated termina
 - Solved by switching to **Streamable-http transport**  
 
 ---
+### ADK AGENT
+- There was a problem with connecting the agents to the google search tool → wrapped the tool in an angent and passed it to the agents as a subagent
+- Prompt changes: the analyzer agent was responding by itself sometimes until i explicitly told him in the prompt that he had to go to one of the agents and he can not give out a response.
 
+---
 ### A2A
 - Huge difficulty finding working code, tested many repos  
 - Repo structure was different → needed adjustments  
@@ -95,7 +112,13 @@ Query the agent via the Gradio UI by running the `app.py` in a dedicated termina
   CompiledStateGraph is not callable
   ```  
   - Cause: In `main`, line `agent_executor=LegalAssistantExecutor()` was wrong  
-  - Fix: Graph was already a compiledstategraph → should call as a **variable** (no parentheses)  
+  - Fix: Graph was already a compiledstategraph → should call as a **variable** (no parentheses) 
+
+- Streaming the output:
+  I tried to call the langgraph agent using astream (Instead of ainvoke) so that the characters would be printed one by one as they were being generated. But this proved difficult since I was getting errors and there were no good websites or repos adressing this issue that i could find. Therefore I opted to use the ainvoke method.
+
+- Tester.py:
+  I imported this class from the repo found in the references to test if i can call the exposed langgraph agent. I tried for several hours to make it work but it did not, therefore i stopped and directly connected the langraph agent to my adk agent and started debugging from there to stop wasting time.
 
 - Orchestrator issues:  
   - Tried binding agents as a tool → errors  
@@ -107,7 +130,7 @@ Query the agent via the Gradio UI by running the `app.py` in a dedicated termina
 ### API
 - Faced problems connecting root agent to API  
 - Needed terminal interaction (not only ADK web)  
-- Fixed using a **Stack Overflow solution**  
+- Fixed using a **Stack Overflow solution** That uses the Runner function and sessions to be able to prompt in the terminal.
 
 ---
 
